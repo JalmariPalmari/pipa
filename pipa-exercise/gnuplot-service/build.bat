@@ -1,1 +1,1 @@
-docker build -t gnuplot-service
+docker build -t gnuplot-service .

@@ -1,39 +1,42 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+const body_parser = require("body-parser");
 const gnuplot = require("gnuplot");
 
-// asenna paketit konsolissa
-// npm install express, gnuplot, 
+const {
+    Base64Encode
+} = require("base64-stream");
+
+// Asenna paketit konsolista
+// npm install express
+// etc..
+
+// Alusta express sovellus
 const app = express();
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded( 
-    {
-        extended: true
-    }
-));
-
+//Lisää parserit POST kutsun json muotoiselle bodylle
+//ja GET query parametreille
+app.use(body_parser.json());
+app.use(body_parser.urlencoded({
+    extended: true
+}));
 
 //Käsittelijä POST kutsulle, jossa JSON muotoinen data
-// {
-//    "formula": 
+//{
+//  "formula": "sin(x)+x**2"
 //}
 
 app.post("/", (req, res, next) => {
     const formula = req.body.formula;
-
-    // plottaa png kuva
-    gnuplot()
-    .set("term png")
-    .unset("output") // ei haluta tiedostoon, vaan suoraan streamiin
-    .plot(formula,{
-        end: true   
-    })
-    .pipe(res);
-
     console.log(formula);
-    res.send("ok")
+    //plottaa png kuva
+    gnuplot()
+        .set("term png")
+        .unset("output")
+        .plot(formula, {
+            end: true
+        })
+        .pipe(new Base64Encode())
+        .pipe(res);
 });
 
 //Kuuntele porttia 80
