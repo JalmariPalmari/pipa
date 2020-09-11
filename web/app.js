@@ -25,6 +25,7 @@ app.use(
   })
 );
 
+
 app.get("/", (req, res, next) => {
   formula_model.find({}).then((formulas) => {
     res.write(`    
